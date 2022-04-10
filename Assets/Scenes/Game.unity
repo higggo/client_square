@@ -205,7 +205,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 217028313}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 911303844}
+        m_TargetAssemblyTypeName: WS_Client, Assembly-CSharp
+        m_MethodName: TrySearchMatch
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &217028313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,7 +447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26cf68db1b80745b6aa4c3f7540a89f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  txt_server_conn: {fileID: 625112549}
+  txt_server_conn: {fileID: 625112551}
 --- !u!4 &911303845
 Transform:
   m_ObjectHideFlags: 0
