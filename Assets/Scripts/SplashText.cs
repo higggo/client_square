@@ -17,7 +17,7 @@ public class SplashText : MonoBehaviour
     public void ExitSplash()
     {
         this.gameObject.SetActive(false);
-        SceneManager.LoadScene("Game", LoadSceneMode.Single);
+        SceneManager.LoadScene("Lobby", LoadSceneMode.Single);
 
     }
 }
