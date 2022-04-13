@@ -19,16 +19,18 @@ public class Bar : MonoBehaviour, IPointerClickHandler
         int num;
         string str;
         str = gameObject.transform.name;
-        str = str.Substring(str.Length - 2, 2);
+        //str = str.Substring(str.Length - 2, 2);
         int.TryParse(str, out num);
+
         idx = num;
+        Debug.Log($"{gameObject.transform.name}bar idx : {idx}");
     }
     public void OnPointerClick(PointerEventData eventData)
     {
         if(active)
         {
             CS_Game_Select dataform;
-            dataform.ph = new Head(PacketID.CS_SEARCHING_ENEMY, 5);
+            dataform.ph = new Head(PacketID.CS_GAME_SELECT, 5);
             dataform.bar = idx;
             string packet = JsonUtility.ToJson(dataform);
             WS_Client.Instance.Send(packet);

@@ -10,23 +10,17 @@ public class Point : MonoBehaviour
     private void Awake()
     {
         text = gameObject.GetComponentInChildren<Text>();
-        int num;
-        string str;
-        str = gameObject.transform.name;
-        str = str.Substring(str.Length - 2, 2);
-        int.TryParse(str, out num);
-        idx = num;
     }
 
     public void SetPoint(bool mine)
     {
         if(mine)
         {
-            text.text = "³»²¨";
+            text.text = "ï¿½ï¿½ï¿½ï¿½";
         }
         else
         {
-            text.text = "»ó´ë¹æ²¨";
+            text.text = "ï¿½ï¿½ï¿½æ²¨";
         }
     }
 }

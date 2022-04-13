@@ -6,7 +6,6 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
 public class Lobby : MonoBehaviour
 {
     public Button btn_SearchEnemy;
@@ -22,7 +21,7 @@ public class Lobby : MonoBehaviour
 
     public void WS_OPEN()
     {
-        txt_server_conn.text = "¼­¹ö¿Í ¿¬°áµÇ¾ú½À´Ï´Ù.";
+        txt_server_conn.text = "ì„œë²„ì™€ ì—°ê²°ë˜ì—ˆìŠµë‹ˆë‹¤.";
         Observable.Interval(TimeSpan.FromMilliseconds(3000f))
             .Subscribe(_ => {
                 CS_Ping dataform;
@@ -33,22 +32,22 @@ public class Lobby : MonoBehaviour
     }
     public void WS_CLOSE()
     {
-        txt_server_conn.text = "¼­¹ö ¿¬°á¿¡ ½ÇÆĞÇß½À´Ï´Ù.";
+        txt_server_conn.text = "ì„œë²„ ì—°ê²°ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.";
     }
     public void WS_ERROR()
     {
-        txt_server_conn.text = "¼­¹ö ¿¬°á¿¡ ½ÇÆĞÇß½À´Ï´Ù.";
+        txt_server_conn.text = "ì„œë²„ ì—°ê²°ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.";
     }
     public void SC_SEARCHING_ENEMY(SC_Searching_Enemy packet)
     {
-        txt_server_conn.text = $"´ëÀü Ã£´Â Áß...";
+        txt_server_conn.text = $"ëŒ€ì „ ì°¾ëŠ” ì¤‘...";
         btn_SearchEnemy.gameObject.SetActive(false);
         btn_SearchCancel.gameObject.SetActive(true);
     }
 
     public void SC_SEARCHING_RESULT(SC_Searching_Result packet)
     {
-        txt_server_conn.text = $"°ğ °ÔÀÓÀÌ ½ÃÀÛµË´Ï´Ù.";
+        txt_server_conn.text = $"ê³§ ê²Œì„ì´ ì‹œì‘ë©ë‹ˆë‹¤.";
         btn_SearchEnemy.gameObject.SetActive(false);
         btn_SearchCancel.gameObject.SetActive(false);
 
@@ -61,7 +60,7 @@ public class Lobby : MonoBehaviour
     }
     public void SC_SEARCHING_CANCEL(SC_Searching_Cancel packet)
     {
-        txt_server_conn.text = "¼­¹ö¿Í ¿¬°áµÇ¾ú½À´Ï´Ù.";
+        txt_server_conn.text = "ì„œë²„ì™€ ì—°ê²°ë˜ì—ˆìŠµë‹ˆë‹¤.";
         btn_SearchCancel.gameObject.SetActive(false);
         btn_SearchEnemy.gameObject.SetActive(true);
     }

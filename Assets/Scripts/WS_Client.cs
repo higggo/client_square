@@ -254,6 +254,7 @@ public class WS_Client : MonoBehaviour
             }
             if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Game)
             {
+                Debug.Log("server msg : " + e.Data);
                 switch ((PacketID)JsonUtility.FromJson<HeadType>(server_msg).ph.num)
                 {
                     case PacketID.SC_PING:
