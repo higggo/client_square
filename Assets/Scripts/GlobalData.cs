@@ -7,6 +7,7 @@ public class GlobalData : MonoBehaviour
     public static GlobalData Instance;
     
     public Lobby lobby;
+    public Game game;
     public Scene CurrentScene = Scene.Intro;
     private void Awake()
     {
@@ -15,8 +16,8 @@ public class GlobalData : MonoBehaviour
     public enum Scene
     {
         Intro = 0,
-        Loading,
         Lobby,
+        Loading,
         Game
     }
 }
