@@ -16,11 +16,11 @@ public class Point : MonoBehaviour
     {
         if(mine)
         {
-            text.text = "����";
+            text.text = "내꺼";
         }
         else
         {
-            text.text = "���沨";
+            text.text = "상대꺼";
         }
     }
 }

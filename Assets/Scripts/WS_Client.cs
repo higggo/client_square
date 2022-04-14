@@ -190,6 +190,8 @@ public struct SC_Game_Result
 {
     public Head ph;
     public int winner;
+    public int winner_point;
+    public int looser_point;
 }
 
 [System.Serializable]
@@ -221,7 +223,7 @@ public class WS_Client : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ws = new WebSocket("ws://localhost:8080");
+        ws = new WebSocket("ws://192.168.0.90:8080");
         ws.OnMessage += (sender, e) =>
         {
             string server_msg = e.Data;
@@ -261,7 +263,7 @@ public class WS_Client : MonoBehaviour
                         SC_Ping sc_ping = JsonUtility.FromJson<SC_Ping>(e.Data);
                         executeOnMainThread.Enqueue(() => SC_PING(sc_ping));
                         break;
-                    case PacketID.CS_GAME_READY:
+                    case PacketID.SC_GAME_READY:
                         SC_Game_Ready sc_game_ready = JsonUtility.FromJson<SC_Game_Ready>(e.Data);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_READY(sc_game_ready));
                         break;

@@ -45,13 +45,17 @@ public class Bar : MonoBehaviour, IPointerClickHandler
         if (!active) return false;
         else
         {
-            SetActive(true);
+            SetActive(false);
             return true;
         }
     }
-    public void AnimPlay(bool anim)
+    public void AnimActive(bool anim)
     {
         this.anim.SetBool("active", anim);
         animActive = anim;
+    }
+    public void AnimPlay(bool play)
+    {
+        this.anim.enabled = play;
     }
 }

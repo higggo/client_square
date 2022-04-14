@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +17,12 @@ public class Game : MonoBehaviour
 
     public Button btn_ready;
     public Button btn_cancel;
+
+    public Text txt_winner;
+    public Text txt_score;
+
+    int myPoint = 0;
+    int otherPoint = 0;
 
     private void Awake()
     {
@@ -54,7 +62,6 @@ public class Game : MonoBehaviour
         }
 
 
-        active_bars = all_bars;
     }
 
     public void WS_OPEN()
@@ -68,6 +75,7 @@ public class Game : MonoBehaviour
     }
     public void SC_GAME_READY(SC_Game_Ready packet)
     {
+        Debug.Log("ready"+packet);
         if(packet.ready == true)
         {
             btn_cancel.gameObject.SetActive(true);
@@ -87,6 +95,19 @@ public class Game : MonoBehaviour
         btn_cancel.gameObject.SetActive(false);
         btn_ready.gameObject.SetActive(false);
 
+        static_bars.Clear();
+        foreach (var key in all_points.Keys)
+        {
+            all_points[key].text.text = "";
+        }
+        foreach (var key in all_bars.Keys)
+        {
+            all_bars[key].active = true;
+            all_bars[key].AnimActive(true);
+            all_bars[key].AnimPlay(true);
+            all_bars[key].anim.Play("bar_active", -1, 0f);
+            active_bars.Add(key, all_bars[key]);
+        }
 
         CS_Game_Start dataform;
         dataform.ph = new Head(PacketID.CS_GAME_START, 5);
@@ -94,22 +115,32 @@ public class Game : MonoBehaviour
     }
     public void SC_GAME_COMPUTE(SC_Game_Compute packet)
     {
-        active_bars[packet.bar].Select();
-        static_bars.Add(packet.bar, active_bars[packet.bar]);
-        active_bars.Remove(packet.bar);
-
-        for(int i=0; i<packet.matrixes.Length; i++)
+        if(active_bars[packet.bar].Select())
         {
-            int idx = packet.matrixes[i].row * 10 + packet.matrixes[i].col;
-            if (packet.userIdx == userIdx)
+            active_bars[packet.bar].AnimActive(false);
+            static_bars.Add(packet.bar, active_bars[packet.bar]);
+            static_bars[packet.bar].AnimPlay(true);
+            active_bars.Remove(packet.bar);
+
+
+            for (int i = 0; i < packet.matrixes.Length; i++)
             {
-                all_points[idx].SetPoint(true);
-            }
-            else
-            {
-                all_points[idx].SetPoint(false);
+                int idx = packet.matrixes[i].row * 10 + packet.matrixes[i].col;
+                if (packet.userIdx == userIdx)
+                {
+                    all_points[idx].SetPoint(true);
+                }
+                else
+                {
+                    all_points[idx].SetPoint(false);
+                }
             }
         }
+
+
+        CS_Game_Compute dataform;
+        dataform.ph = new Head(PacketID.CS_GAME_COMPUTE, 5);
+        WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
     }
     public void SC_GAME_TURN(SC_Game_Turn packet)
     {
@@ -138,13 +169,27 @@ public class Game : MonoBehaviour
     {
         static_bars.Clear();
         active_bars.Clear();
-        active_bars = all_bars;
-
-        all_points.Clear();
-        foreach(var key in all_points.Keys)
+        if(userIdx == packet.winner)
         {
-            all_points[key].text.text = "";
+            txt_winner.text = $"{packet.winner_point} : {packet.looser_point} 승리";
+            myPoint++;
         }
+        else
+        {
+            txt_winner.text = $"{packet.looser_point} : {packet.winner_point} 패배";
+            otherPoint++;
+        }
+        txt_winner.gameObject.SetActive(true);
+        txt_score.text = otherPoint.ToString() + " : " + myPoint.ToString();
+
+        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => { 
+            txt_winner.gameObject.SetActive(false);
+            btn_ready.gameObject.SetActive(true);
+        });
+        CS_Game_Result dataform;
+        dataform.ph = new Head(PacketID.CS_GAME_RESULT, 5);
+        WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
+
     }
     public void SC_GAME_OUT(SC_Game_Out packet)
     {
