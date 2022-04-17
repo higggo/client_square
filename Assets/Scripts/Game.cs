@@ -36,6 +36,10 @@ public class Game : MonoBehaviour
     }
     private void Start()
     {
+        //
+        btn_ready.gameObject.SetActive(false);
+
+        //
         Bar[] BarComponents = Parent_Bar.GetComponentsInChildren<Bar>();
         for (int i=0; i < BarComponents.Length; i++)
         {
@@ -62,6 +66,9 @@ public class Game : MonoBehaviour
         }
 
 
+        CS_Game_Entry dataform;
+        dataform.ph = new Head(PacketID.CS_GAME_ENTRY, 5);
+        WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
     }
 
     public void WS_OPEN()
@@ -194,6 +201,14 @@ public class Game : MonoBehaviour
     public void SC_GAME_OUT(SC_Game_Out packet)
     {
 
+    }
+    public void SC_GAME_TIMER(SC_Game_Timer packet)
+    {
+        Debug.Log($"Remain Time : {packet.sec}");
+    }
+    public void SC_GAME_ENTRY(SC_Game_Entry packet)
+    {
+        btn_ready.gameObject.SetActive(true);
     }
     public void Ready()
     {

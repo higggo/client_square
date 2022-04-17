@@ -13,6 +13,7 @@ public class Bar : MonoBehaviour, IPointerClickHandler
     private void Start()
     {
         anim = GetComponent<Animator>();
+        
 
         this.anim.SetBool("active", false);
 

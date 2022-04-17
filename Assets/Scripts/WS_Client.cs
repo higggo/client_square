@@ -20,6 +20,8 @@ public enum PacketID
     CS_GAME_SELECT = 1009,
     CS_GAME_RESULT = 1010,
     CS_GAME_OUT = 1011,
+    CS_GAME_TIMER = 1012,
+    CS_GAME_ENTRY = 1013,
     
 
     SC_PING = 3033,
@@ -32,7 +34,9 @@ public enum PacketID
     SC_GAME_TURN = 3008,
     SC_GAME_SELECT = 3009,
     SC_GAME_RESULT = 3010,
-    SC_GAME_OUT = 3011
+    SC_GAME_OUT = 3011,
+    SC_GAME_TIMER = 3012,
+    SC_GAME_ENTRY = 3013,
 }
 
 [System.Serializable]
@@ -47,7 +51,6 @@ public struct Matrix
 [System.Serializable]
 public struct Head
 {
-    
     public PacketID num;      // packet number
     public int size;
 
@@ -128,6 +131,18 @@ public struct CS_Game_Out
 }
 
 [System.Serializable]
+public struct CS_Game_Timer
+{
+    public Head ph;
+}
+
+[System.Serializable]
+public struct CS_Game_Entry
+{
+    public Head ph;
+}
+
+[System.Serializable]
 public struct SC_Ping
 {
     public Head ph;
@@ -201,6 +216,19 @@ public struct SC_Game_Out
     public bool gameOut;
 }
 
+[System.Serializable]
+public struct SC_Game_Timer
+{
+    public Head ph;
+    public int sec;
+}
+
+[System.Serializable]
+public struct SC_Game_Entry
+{
+    public Head ph;
+}
+
 
 //
 
@@ -223,7 +251,8 @@ public class WS_Client : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ws = new WebSocket("ws://192.168.0.90:8080");
+        ws = new WebSocket("ws://localhost:8080");
+        
         ws.OnMessage += (sender, e) =>
         {
             string server_msg = e.Data;
@@ -290,6 +319,14 @@ public class WS_Client : MonoBehaviour
                     case PacketID.SC_GAME_OUT:
                         SC_Game_Out sc_game_out = JsonUtility.FromJson<SC_Game_Out>(e.Data);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_OUT(sc_game_out));
+                        break;
+                    case PacketID.SC_GAME_TIMER:
+                        SC_Game_Timer sc_game_timer = JsonUtility.FromJson<SC_Game_Timer>(e.Data);
+                        executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_TIMER(sc_game_timer));
+                        break;
+                    case PacketID.SC_GAME_ENTRY:
+                        SC_Game_Entry sc_game_entry = JsonUtility.FromJson<SC_Game_Entry>(e.Data);
+                        executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_ENTRY(sc_game_entry));
                         break;
                 }
             }
@@ -359,7 +396,6 @@ public class WS_Client : MonoBehaviour
 
     public void SC_PING(SC_Ping packet)
     {
-        
         Debug.Log("Receive Ping : ping.ph.num" + packet.ph.num);
     }
 }
