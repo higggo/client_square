@@ -21,17 +21,17 @@ public class UINavigation : MonoBehaviour
     private async UniTask GoToSceneAsync(GlobalData.Scene scene)
     {
         NextScene = scene;
+        Scene activeScene = SceneManager.GetActiveScene();
 
         await SceneManager.LoadSceneAsync((int)GlobalData.Scene.Loading, LoadSceneMode.Additive);
-        //
-        Scene activeScene = SceneManager.GetActiveScene();
         await SceneManager.UnloadSceneAsync(activeScene);
+        await UniTask.Delay(1500);
+        await SceneManager.LoadSceneAsync((int)NextScene, LoadSceneMode.Single);
+        await SceneManager.UnloadSceneAsync((int)GlobalData.Scene.Loading);
     }
     public async UniTask Push()
     {
-        await SceneManager.LoadSceneAsync((int)NextScene, LoadSceneMode.Additive);
-
-        await UniTask.Delay(500);
-        await SceneManager.UnloadSceneAsync((int)GlobalData.Scene.Loading);
+        //await UniTask.Delay(1500);
+        //await SceneManager.UnloadSceneAsync((int)GlobalData.Scene.Loading);
     }
 }

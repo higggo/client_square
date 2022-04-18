@@ -54,7 +54,7 @@ public class Lobby : MonoBehaviour
         btn_SearchCancel.gameObject.SetActive(false);
 
         Observable
-        .Timer(TimeSpan.FromSeconds(3))
+        .Timer(TimeSpan.FromSeconds(1))
         .Subscribe(_ => {
             UINavigation.Instance.GoToScene(GlobalData.Scene.Game);
         });
