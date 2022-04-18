@@ -22,21 +22,23 @@ public class Lobby : MonoBehaviour
     public void WS_OPEN()
     {
         txt_server_conn.text = "서버와 연결되었습니다.";
-        Observable.Interval(TimeSpan.FromMilliseconds(3000f))
-            .Subscribe(_ => {
-                CS_Ping dataform;
-                dataform.ph = new Head(PacketID.CS_PING, 5);
-                string cs_packet = JsonUtility.ToJson(dataform);
-                WS_Client.Instance.Send(cs_packet);
-            });
+        //Observable.Interval(TimeSpan.FromMilliseconds(3000f))
+        //    .Subscribe(_ => {
+        //        CS_Ping dataform;
+        //        dataform.ph = new Head(PacketID.CS_PING, 5);
+        //        string cs_packet = JsonUtility.ToJson(dataform);
+        //        WS_Client.Instance.Send(cs_packet);
+        //    });
     }
     public void WS_CLOSE()
     {
-        txt_server_conn.text = "서버 연결에 실패했습니다.";
+        GlobalData.Instance.Popup("서버와 연결이 끊겼습니다.");
+        txt_server_conn.text = "서버와 연결이 끊겼습니다.";
     }
     public void WS_ERROR()
     {
-        txt_server_conn.text = "서버 연결에 실패했습니다.";
+        GlobalData.Instance.Popup("서버와 연결이 끊겼습니다.");
+        txt_server_conn.text = "서버와 연결이 끊겼습니다.";
     }
     public void SC_SEARCHING_ENEMY(SC_Searching_Enemy packet)
     {

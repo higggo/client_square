@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GlobalData : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class GlobalData : MonoBehaviour
     public Lobby lobby;
     public Game game;
     public Scene CurrentScene = Scene.Intro;
+    public Camera mainCamera;
+    public GameObject PopupObject;
+    public Transform UI_Popup;
     private void Awake()
     {
         Instance = this;
@@ -19,5 +23,11 @@ public class GlobalData : MonoBehaviour
         Lobby,
         Loading,
         Game
+    }
+
+    public void Popup(string msg, UnityAction action = null)
+    {
+        GameObject popup = Instantiate(PopupObject, UI_Popup);
+        popup.GetComponent<Popup>().Set(msg, action);
     }
 }

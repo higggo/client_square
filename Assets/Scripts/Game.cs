@@ -76,9 +76,11 @@ public class Game : MonoBehaviour
     }
     public void WS_CLOSE()
     {
+        GlobalData.Instance.Popup("서버와 연결이 끊겼습니다.");
     }
     public void WS_ERROR()
     {
+        GlobalData.Instance.Popup("서버와 연결이 끊겼습니다.");
     }
     public void SC_GAME_READY(SC_Game_Ready packet)
     {

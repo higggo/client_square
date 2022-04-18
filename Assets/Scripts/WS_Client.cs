@@ -256,17 +256,21 @@ public class WS_Client : MonoBehaviour
         ws.OnMessage += (sender, e) =>
         {
             string server_msg = e.Data;
+            PacketID packetID = (PacketID)JsonUtility.FromJson<HeadType>(server_msg).ph.num;
 
-            if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Lobby)
+            // ping
+            if(packetID == PacketID.SC_PING)
             {
-                switch ((PacketID)JsonUtility.FromJson<HeadType>(server_msg).ph.num)
+                CS_Ping dataform;
+                dataform.ph = new Head(PacketID.CS_PING, 5);
+                string cs_packet = JsonUtility.ToJson(dataform);
+                Send(cs_packet);
+            }
+            else if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Lobby)
+            {
+                switch (packetID)
                 {
                     // Lobby
-                    case PacketID.SC_PING:
-                        //
-                        SC_Ping sc_ping = JsonUtility.FromJson<SC_Ping>(e.Data);
-                        executeOnMainThread.Enqueue(() => SC_PING(sc_ping));
-                        break;
                     case PacketID.SC_SEARCHING_ENEMY:
                         SC_Searching_Enemy sc_se = JsonUtility.FromJson<SC_Searching_Enemy>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.lobby.SC_SEARCHING_ENEMY(sc_se));
@@ -283,15 +287,11 @@ public class WS_Client : MonoBehaviour
                         break;
                 }
             }
-            if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Game)
+            else if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Game)
             {
                 Debug.Log("server msg : " + e.Data);
-                switch ((PacketID)JsonUtility.FromJson<HeadType>(server_msg).ph.num)
+                switch (packetID)
                 {
-                    case PacketID.SC_PING:
-                        SC_Ping sc_ping = JsonUtility.FromJson<SC_Ping>(e.Data);
-                        executeOnMainThread.Enqueue(() => SC_PING(sc_ping));
-                        break;
                     case PacketID.SC_GAME_READY:
                         SC_Game_Ready sc_game_ready = JsonUtility.FromJson<SC_Game_Ready>(e.Data);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_READY(sc_game_ready));
