@@ -247,12 +247,13 @@ public class WS_Client : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        ws = new WebSocket("ws://localhost:8080");
     }
     // Start is called before the first frame update
-    void Start()
+    public void WebSocketStart()
     {
-        ws = new WebSocket("ws://localhost:8080");
-        
+
+        ws.Connect();
         ws.OnMessage += (sender, e) =>
         {
             string server_msg = e.Data;
@@ -367,7 +368,6 @@ public class WS_Client : MonoBehaviour
                 executeOnMainThread.Enqueue(() => GlobalData.Instance.game.WS_CLOSE());
             }
         };
-        ws.Connect();
     }
     // Update is called once per frame
     void Update()

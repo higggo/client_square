@@ -28,9 +28,9 @@ public class UINavigation : MonoBehaviour
         await UniTask.Delay(1500);
         await SceneManager.LoadSceneAsync((int)NextScene, LoadSceneMode.Single);
     }
-    public async UniTask Push()
-    {
-        //await UniTask.Delay(1500);
-        //await SceneManager.UnloadSceneAsync((int)GlobalData.Scene.Loading);
-    }
+    //public async UniTask Push()
+    //{
+    //    //await UniTask.Delay(1500);
+    //    //await SceneManager.UnloadSceneAsync((int)GlobalData.Scene.Loading);
+    //}
 }

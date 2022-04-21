@@ -7,6 +7,6 @@ public class Loading : MonoBehaviour
 {
     private void Awake()
     {
-        UINavigation.Instance.Push().Forget();
+        //UINavigation.Instance.Push().Forget();
     }
 }

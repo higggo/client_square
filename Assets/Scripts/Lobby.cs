@@ -18,7 +18,10 @@ public class Lobby : MonoBehaviour
         GlobalData.Instance.CurrentScene = GlobalData.Scene.Lobby;
         GlobalData.Instance.lobby = this;
     }
-
+    private void Start()
+    {
+        //WS_Client.Instance.WebSocketStart();
+    }
     public void WS_OPEN()
     {
         txt_server_conn.text = "서버와 연결되었습니다.";
