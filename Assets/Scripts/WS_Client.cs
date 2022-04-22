@@ -1,11 +1,9 @@
 using System;
 using UnityEngine;
-using WebSocketSharp;
-using UniRx;
-using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
-using Cysharp.Threading.Tasks;
+
+using HybridWebSocket;
+using System.Text;
 
 public enum PacketID
 {
@@ -247,20 +245,35 @@ public class WS_Client : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        ws = new WebSocket("ws://localhost:8080");
+        Debug.Log("Awake WS_Clkient");
     }
     // Start is called before the first frame update
     public void WebSocketStart()
     {
-
-        ws.Connect();
-        ws.OnMessage += (sender, e) =>
+        ws = WebSocketFactory.CreateInstance("ws://192.168.0.90:8080");        
+        
+        // Add OnOpen event listener
+        ws.OnOpen += () =>
         {
-            string server_msg = e.Data;
+            if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Lobby)
+            {
+                executeOnMainThread.Enqueue(() => GlobalData.Instance.lobby.WS_OPEN());
+            }
+            else if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Game)
+            {
+                executeOnMainThread.Enqueue(() => GlobalData.Instance.game.WS_OPEN());
+            }
+        };
+
+        // Add OnMessage event listener
+        ws.OnMessage += (byte[] msg) =>
+        {
+            Debug.Log("WS received message: " + Encoding.UTF8.GetString(msg));
+            string server_msg = Encoding.UTF8.GetString(msg);
             PacketID packetID = (PacketID)JsonUtility.FromJson<HeadType>(server_msg).ph.num;
 
             // ping
-            if(packetID == PacketID.SC_PING)
+            if (packetID == PacketID.SC_PING)
             {
                 CS_Ping dataform;
                 dataform.ph = new Head(PacketID.CS_PING, 5);
@@ -290,61 +303,51 @@ public class WS_Client : MonoBehaviour
             }
             else if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Game)
             {
-                Debug.Log("server msg : " + e.Data);
+                Debug.Log("server msg : " + server_msg);
                 switch (packetID)
                 {
                     case PacketID.SC_GAME_READY:
-                        SC_Game_Ready sc_game_ready = JsonUtility.FromJson<SC_Game_Ready>(e.Data);
+                        SC_Game_Ready sc_game_ready = JsonUtility.FromJson<SC_Game_Ready>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_READY(sc_game_ready));
                         break;
                     case PacketID.SC_GAME_START:
-                        SC_Game_Start sc_game_start = JsonUtility.FromJson<SC_Game_Start>(e.Data);
+                        SC_Game_Start sc_game_start = JsonUtility.FromJson<SC_Game_Start>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_START(sc_game_start));
                         break;
                     case PacketID.SC_GAME_COMPUTE:
-                        SC_Game_Compute sc_game_compute = JsonUtility.FromJson<SC_Game_Compute>(e.Data);
+                        SC_Game_Compute sc_game_compute = JsonUtility.FromJson<SC_Game_Compute>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_COMPUTE(sc_game_compute));
                         break;
                     case PacketID.SC_GAME_TURN:
-                        SC_Game_Turn sc_game_turn = JsonUtility.FromJson<SC_Game_Turn>(e.Data);
+                        SC_Game_Turn sc_game_turn = JsonUtility.FromJson<SC_Game_Turn>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_TURN(sc_game_turn));
                         break;
                     case PacketID.SC_GAME_SELECT:
-                        SC_Game_Select sc_game_select = JsonUtility.FromJson<SC_Game_Select>(e.Data);
+                        SC_Game_Select sc_game_select = JsonUtility.FromJson<SC_Game_Select>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_SELECT(sc_game_select));
                         break;
                     case PacketID.SC_GAME_RESULT:
-                        SC_Game_Result sc_game_result = JsonUtility.FromJson<SC_Game_Result>(e.Data);
+                        SC_Game_Result sc_game_result = JsonUtility.FromJson<SC_Game_Result>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_RESULT(sc_game_result));
                         break;
                     case PacketID.SC_GAME_OUT:
-                        SC_Game_Out sc_game_out = JsonUtility.FromJson<SC_Game_Out>(e.Data);
+                        SC_Game_Out sc_game_out = JsonUtility.FromJson<SC_Game_Out>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_OUT(sc_game_out));
                         break;
                     case PacketID.SC_GAME_TIMER:
-                        SC_Game_Timer sc_game_timer = JsonUtility.FromJson<SC_Game_Timer>(e.Data);
+                        SC_Game_Timer sc_game_timer = JsonUtility.FromJson<SC_Game_Timer>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_TIMER(sc_game_timer));
                         break;
                     case PacketID.SC_GAME_ENTRY:
-                        SC_Game_Entry sc_game_entry = JsonUtility.FromJson<SC_Game_Entry>(e.Data);
+                        SC_Game_Entry sc_game_entry = JsonUtility.FromJson<SC_Game_Entry>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_ENTRY(sc_game_entry));
                         break;
                 }
             }
         };
-        ws.OnOpen += (sender, e) =>
-        {
-            if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Lobby)
-            {
-                executeOnMainThread.Enqueue(() => GlobalData.Instance.lobby.WS_OPEN());
-            }
-            else if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Game)
-            {
-                executeOnMainThread.Enqueue(() => GlobalData.Instance.game.WS_OPEN());
-            }
 
-        };        // Add OnError event listener
-        ws.OnError += (sender, e) =>
+        // Add OnError event listener
+        ws.OnError += (string errMsg) =>
         {
             if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Lobby)
             {
@@ -357,7 +360,7 @@ public class WS_Client : MonoBehaviour
         };
 
         // Add OnClose event listener
-        ws.OnClose += (sender, e) =>
+        ws.OnClose += (WebSocketCloseCode code) =>
         {
             if (GlobalData.Instance.CurrentScene == GlobalData.Scene.Lobby)
             {
@@ -368,6 +371,9 @@ public class WS_Client : MonoBehaviour
                 executeOnMainThread.Enqueue(() => GlobalData.Instance.game.WS_CLOSE());
             }
         };
+
+        // Connect to the server
+        ws.Connect();
     }
     // Update is called once per frame
     void Update()
@@ -385,7 +391,7 @@ public class WS_Client : MonoBehaviour
     {
         try
         {
-            ws.Send(msg);
+            ws.Send(Encoding.UTF8.GetBytes(msg));
         }
         catch (System.Exception)
         {

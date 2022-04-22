@@ -17,10 +17,12 @@ public class Lobby : MonoBehaviour
     {
         GlobalData.Instance.CurrentScene = GlobalData.Scene.Lobby;
         GlobalData.Instance.lobby = this;
+        Debug.Log("Awake WS_Clkient");
     }
     private void Start()
     {
-        //WS_Client.Instance.WebSocketStart();
+        WS_Client.Instance.WebSocketStart();
+        Debug.Log("Start WS_Clkient");
     }
     public void WS_OPEN()
     {
