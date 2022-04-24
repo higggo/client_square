@@ -174,6 +174,8 @@ public struct SC_Game_Start
 {
     public Head ph;
     public int userIdx;
+    public int match;
+    public int round;
 }
 
 [System.Serializable]
@@ -250,7 +252,7 @@ public class WS_Client : MonoBehaviour
     // Start is called before the first frame update
     public void WebSocketStart()
     {
-        ws = WebSocketFactory.CreateInstance("ws://192.168.0.90:8080");        
+        ws = WebSocketFactory.CreateInstance("ws://localhost:8080");        
         
         // Add OnOpen event listener
         ws.OnOpen += () =>
