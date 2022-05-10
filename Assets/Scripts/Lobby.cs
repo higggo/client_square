@@ -75,7 +75,7 @@ public class Lobby : MonoBehaviour
     public void TrySearchMatch()
     {
         CS_Searching_Enemy dataform;
-        dataform.ph = new Head(PacketID.CS_SEARCHING_ENEMY, 5);
+        dataform.ph = new Head(PacketID.CS_LOBBY_SEARCHING_ENEMY, 5);
         string packet = JsonUtility.ToJson(dataform);
         WS_Client.Instance.Send(packet);
     }
@@ -83,7 +83,7 @@ public class Lobby : MonoBehaviour
     public void CancelSearchMatch()
     {
         CS_Searching_Cancel dataform;
-        dataform.ph = new Head(PacketID.CS_SEARCHING_CANCEL, 5);
+        dataform.ph = new Head(PacketID.CS_LOBBY_SEARCHING_CANCEL, 5);
         string packet = JsonUtility.ToJson(dataform);
         WS_Client.Instance.Send(packet);
     }

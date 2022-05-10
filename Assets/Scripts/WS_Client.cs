@@ -7,34 +7,35 @@ using System.Text;
 
 public enum PacketID
 {
-    CS_PING = 1033,
-    CS_SEARCHING_ENEMY = 1002,
-    CS_SEARCHING_RESULT = 1003,
-    CS_SEARCHING_CANCEL = 1004,
-    CS_GAME_READY = 1005,
-    CS_GAME_START = 1006,
-    CS_GAME_COMPUTE = 1007,
-    CS_GAME_TURN = 1008,
-    CS_GAME_SELECT = 1009,
-    CS_GAME_RESULT = 1010,
-    CS_GAME_OUT = 1011,
-    CS_GAME_TIMER = 1012,
-    CS_GAME_ENTRY = 1013,
-    
+    CS_PING = 1001,
+    CS_LOBBY_SEARCHING_ENEMY,
+    CS_LOBBY_SEARCHING_RESULT,
+    CS_LOBBY_SEARCHING_CANCEL,
+    CS_GAME_ENTRY,
+    CS_GAME_READY,
+    CS_GAME_START,
+    CS_GAME_COMPUTE,
+    CS_GAME_TURN,
+    CS_GAME_SELECT,
+    CS_GAME_RESULT,
+    CS_GAME_NEW_MATCH,
+    CS_GAME_OUT,
+    CS_GAME_TIMER,
 
-    SC_PING = 3033,
-    SC_SEARCHING_ENEMY = 3002,
-    SC_SEARCHING_RESULT = 3003,
-    SC_SEARCHING_CANCEL = 3004,
-    SC_GAME_READY = 3005,
-    SC_GAME_START = 3006,
-    SC_GAME_COMPUTE = 3007,
-    SC_GAME_TURN = 3008,
-    SC_GAME_SELECT = 3009,
-    SC_GAME_RESULT = 3010,
-    SC_GAME_OUT = 3011,
-    SC_GAME_TIMER = 3012,
-    SC_GAME_ENTRY = 3013,
+    SC_PING = 3001,
+    SC_LOBBY_SEARCHING_ENEMY,
+    SC_LOBBY_SEARCHING_RESULT,
+    SC_LOBBY_SEARCHING_CANCEL,
+    SC_GAME_ENTRY,
+    SC_GAME_READY,
+    SC_GAME_START,
+    SC_GAME_COMPUTE,
+    SC_GAME_TURN,
+    SC_GAME_SELECT,
+    SC_GAME_RESULT,
+    SC_GAME_NEW_MATCH,
+    SC_GAME_OUT,
+    SC_GAME_TIMER
 }
 
 [System.Serializable]
@@ -141,6 +142,12 @@ public struct CS_Game_Entry
 }
 
 [System.Serializable]
+public struct CS_Game_NewMatch
+{
+    public Head ph;
+}
+
+[System.Serializable]
 public struct SC_Ping
 {
     public Head ph;
@@ -227,6 +234,12 @@ public struct SC_Game_Entry
     public Head ph;
 }
 
+[System.Serializable]
+public struct SC_Game_NewMatch
+{
+    public Head ph;
+}
+
 
 //
 
@@ -285,15 +298,15 @@ public class WS_Client : MonoBehaviour
                 switch (packetID)
                 {
                     // Lobby
-                    case PacketID.SC_SEARCHING_ENEMY:
+                    case PacketID.SC_LOBBY_SEARCHING_ENEMY:
                         SC_Searching_Enemy sc_se = JsonUtility.FromJson<SC_Searching_Enemy>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.lobby.SC_SEARCHING_ENEMY(sc_se));
                         break;
-                    case PacketID.SC_SEARCHING_RESULT:
+                    case PacketID.SC_LOBBY_SEARCHING_RESULT:
                         SC_Searching_Result sc_sr = JsonUtility.FromJson<SC_Searching_Result>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.lobby.SC_SEARCHING_RESULT(sc_sr));
                         break;
-                    case PacketID.SC_SEARCHING_CANCEL:
+                    case PacketID.SC_LOBBY_SEARCHING_CANCEL:
                         SC_Searching_Cancel sc_sc = JsonUtility.FromJson<SC_Searching_Cancel>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.lobby.SC_SEARCHING_CANCEL(sc_sc));
                         break;
@@ -341,6 +354,10 @@ public class WS_Client : MonoBehaviour
                     case PacketID.SC_GAME_ENTRY:
                         SC_Game_Entry sc_game_entry = JsonUtility.FromJson<SC_Game_Entry>(server_msg);
                         executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_ENTRY(sc_game_entry));
+                        break;
+                    case PacketID.SC_GAME_NEW_MATCH:
+                        SC_Game_NewMatch sc_game_new_match = JsonUtility.FromJson<SC_Game_NewMatch>(server_msg);
+                        executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_NEW_MATCH(sc_game_new_match));
                         break;
                 }
             }

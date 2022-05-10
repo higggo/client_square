@@ -210,7 +210,17 @@ public class Game : MonoBehaviour
     }
     public void SC_GAME_ENTRY(SC_Game_Entry packet)
     {
+        CS_Game_Result dataform;
+        dataform.ph = new Head(PacketID.CS_GAME_ENTRY, 5);
+        WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
+    }
+    public void SC_GAME_NEW_MATCH(SC_Game_NewMatch packet)
+    {
         btn_ready.gameObject.SetActive(true);
+
+        CS_Game_Result dataform;
+        dataform.ph = new Head(PacketID.CS_GAME_NEW_MATCH, 5);
+        WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
     }
     public void Ready()
     {
