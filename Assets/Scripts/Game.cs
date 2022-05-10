@@ -15,6 +15,7 @@ public class Game : MonoBehaviour
     Dictionary<int, Bar> active_bars;
     Dictionary<int, Bar> static_bars;
 
+    public RoundPanel Round_Panel;
     public Button btn_ready;
     public Button btn_cancel;
 
@@ -65,7 +66,6 @@ public class Game : MonoBehaviour
             all_points.Add(PointComponents[i].idx, PointComponents[i]);
         }
 
-
         CS_Game_Entry dataform;
         dataform.ph = new Head(PacketID.CS_GAME_ENTRY, 5);
         WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
@@ -103,24 +103,29 @@ public class Game : MonoBehaviour
 
         btn_cancel.gameObject.SetActive(false);
         btn_ready.gameObject.SetActive(false);
+        
+        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => { 
+            // Bar Init
+            static_bars.Clear();
+            foreach (var key in all_points.Keys)
+            {
+                all_points[key].text.text = "";
+            }
+            foreach (var key in all_bars.Keys)
+            {
+                all_bars[key].active = true;
+                all_bars[key].AnimActive(true);
+                all_bars[key].AnimPlay(false);
+                all_bars[key].anim.Play("bar_active", -1, 0f);
+                active_bars.Add(key, all_bars[key]);
+            }
 
-        static_bars.Clear();
-        foreach (var key in all_points.Keys)
-        {
-            all_points[key].text.text = "";
-        }
-        foreach (var key in all_bars.Keys)
-        {
-            all_bars[key].active = true;
-            all_bars[key].AnimActive(true);
-            all_bars[key].AnimPlay(true);
-            all_bars[key].anim.Play("bar_active", -1, 0f);
-            active_bars.Add(key, all_bars[key]);
-        }
-
-        CS_Game_Start dataform;
-        dataform.ph = new Head(PacketID.CS_GAME_START, 5);
-        WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
+            // Round Start
+            Round_Panel.SetRound(packet.round);
+            Round_Panel.gameObject.SetActive(true);
+            txt_winner.gameObject.SetActive(false);
+        });
+        
     }
     public void SC_GAME_COMPUTE(SC_Game_Compute packet)
     {
@@ -130,7 +135,6 @@ public class Game : MonoBehaviour
             static_bars.Add(packet.bar, active_bars[packet.bar]);
             static_bars[packet.bar].AnimPlay(true);
             active_bars.Remove(packet.bar);
-
 
             for (int i = 0; i < packet.matrixes.Length; i++)
             {
@@ -145,7 +149,6 @@ public class Game : MonoBehaviour
                 }
             }
         }
-
 
         CS_Game_Compute dataform;
         dataform.ph = new Head(PacketID.CS_GAME_COMPUTE, 5);
@@ -191,10 +194,10 @@ public class Game : MonoBehaviour
         txt_winner.gameObject.SetActive(true);
         txt_score.text = otherPoint.ToString() + " : " + myPoint.ToString();
 
-        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => { 
-            txt_winner.gameObject.SetActive(false);
-            btn_ready.gameObject.SetActive(true);
-        });
+        // Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => { 
+        //     txt_winner.gameObject.SetActive(false);
+        //     btn_ready.gameObject.SetActive(true);
+        // });
         CS_Game_Result dataform;
         dataform.ph = new Head(PacketID.CS_GAME_RESULT, 5);
         WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
@@ -235,5 +238,13 @@ public class Game : MonoBehaviour
         dataform.ph = new Head(PacketID.CS_GAME_READY, 5);
         dataform.ready = false;
         WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
+    }
+    public void RoundStart()
+    {
+        CS_Game_Start dataform;
+        dataform.ph = new Head(PacketID.CS_GAME_START, 5);
+        WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
+
+        Round_Panel.gameObject.SetActive(false);
     }
 }
