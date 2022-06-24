@@ -1,0 +1,66 @@
+using System.Collections;
+using System.Collections.Generic;
+using UniRx;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class MyCharacter : MonoBehaviour
+{
+    NavMeshAgent agent;
+    public Animator Anim;
+    public bool bRun;
+    // Start is called before the first frame update
+    void Start()
+    {
+
+        agent = GetComponent<NavMeshAgent>();
+        Anim = GetComponent<Animator>();
+        Observable.Interval(System.TimeSpan.FromSeconds(3))
+            .Subscribe(_ => {
+                CS_Game_Position dataform;
+                dataform.ph = new Head(PacketID.CS_GAME_POSITION, 5);
+                dataform.position.x = transform.position.x;
+                dataform.position.y = transform.position.y;
+                dataform.position.z = transform.position.z;
+                WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
+            })
+            .AddTo(this);
+        this.ObserveEveryValueChanged(x => bRun)
+            .Subscribe(_ => {
+                if (_)
+                {
+                    Anim.SetTrigger("Run");
+                    Debug.Log("Run");
+                }
+                else
+                {
+                    Anim.SetTrigger("Wait");
+                    Debug.Log("Wait");
+                }
+            });
+        //agent.destination = new Vector3(1, 0 ,1);
+
+    }
+
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100))
+            {
+                //agent.destination = hit.point;
+
+                CS_Game_Move dataform;
+                dataform.ph = new Head(PacketID.CS_GAME_MOVE, 5);
+                dataform.position.x = hit.point.x;
+                dataform.position.y = hit.point.y;
+                dataform.position.z = hit.point.z;
+                WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
+            }
+        }
+        bRun = agent.velocity.magnitude > 0.0001f;
+    }
+}

@@ -14,6 +14,6 @@ public class RoundPanel : MonoBehaviour
     }
     public void Ready()
     {
-        GlobalData.Instance.game.RoundStart();
+        //GlobalData.Instance.game.RoundStart();
     }
 }

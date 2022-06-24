@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Bar : MonoBehaviour, IPointerClickHandler
+public class Bar : MonoBehaviour
 {
     public bool active = true;
     public Animator anim;
@@ -26,17 +26,7 @@ public class Bar : MonoBehaviour, IPointerClickHandler
         idx = num;
         Debug.Log($"{gameObject.transform.name}bar idx : {idx}");
     }
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if(active)
-        {
-            CS_Game_Select dataform;
-            dataform.ph = new Head(PacketID.CS_GAME_SELECT, 5);
-            dataform.bar = idx;
-            string packet = JsonUtility.ToJson(dataform);
-            WS_Client.Instance.Send(packet);
-        }
-    }
+
     void SetActive(bool active)
     {
         this.active = active;

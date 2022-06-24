@@ -45,46 +45,4 @@ public class Lobby : MonoBehaviour
         GlobalData.Instance.Popup("서버와 연결이 끊겼습니다.");
         txt_server_conn.text = "서버와 연결이 끊겼습니다.";
     }
-    public void SC_SEARCHING_ENEMY(SC_Searching_Enemy packet)
-    {
-        txt_server_conn.text = $"대전 찾는 중...";
-        btn_SearchEnemy.gameObject.SetActive(false);
-        btn_SearchCancel.gameObject.SetActive(true);
-    }
-
-    public void SC_SEARCHING_RESULT(SC_Searching_Result packet)
-    {
-        txt_server_conn.text = $"곧 게임이 시작됩니다.";
-        btn_SearchEnemy.gameObject.SetActive(false);
-        btn_SearchCancel.gameObject.SetActive(false);
-
-        Observable
-        .Timer(TimeSpan.FromSeconds(1))
-        .Subscribe(_ => {
-            UINavigation.Instance.GoToScene(GlobalData.Scene.Game);
-        });
-
-    }
-    public void SC_SEARCHING_CANCEL(SC_Searching_Cancel packet)
-    {
-        txt_server_conn.text = "서버와 연결되었습니다.";
-        btn_SearchCancel.gameObject.SetActive(false);
-        btn_SearchEnemy.gameObject.SetActive(true);
-    }
-
-    public void TrySearchMatch()
-    {
-        CS_Searching_Enemy dataform;
-        dataform.ph = new Head(PacketID.CS_LOBBY_SEARCHING_ENEMY, 5);
-        string packet = JsonUtility.ToJson(dataform);
-        WS_Client.Instance.Send(packet);
-    }
-
-    public void CancelSearchMatch()
-    {
-        CS_Searching_Cancel dataform;
-        dataform.ph = new Head(PacketID.CS_LOBBY_SEARCHING_CANCEL, 5);
-        string packet = JsonUtility.ToJson(dataform);
-        WS_Client.Instance.Send(packet);
-    }
 }
