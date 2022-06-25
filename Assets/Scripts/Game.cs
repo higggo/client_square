@@ -46,7 +46,7 @@ public class Game : MonoBehaviour
             NewCharactor.GetComponent<CharacterInfo>().index = character.index;
             NewCharactor.transform.localPosition = new Vector3(character.position.x, character.position.y, character.position.z);
 
-            GlobalData.Instance.Characters.Add(packet.index, NewCharactor);
+            GlobalData.Instance.Characters.Add(character.index, NewCharactor);
         }
     }
     public void SC_GAME_MOVE(SC_Game_Move packet)
@@ -60,5 +60,13 @@ public class Game : MonoBehaviour
         Destroy(GlobalData.Instance.Characters[packet.index]);
         
         GlobalData.Instance.Characters.Remove(packet.index);
+    }
+    public void SC_GAME_HELLO_NEWCLIENT(SC_Game_Hello_NewClient packet)
+    {
+        GameObject NewCharactor = Instantiate(pref_Character, Grond.transform);
+        NewCharactor.GetComponent<CharacterInfo>().index = packet.character.index;
+        NewCharactor.transform.localPosition = new Vector3(packet.character.position.x, packet.character.position.y, packet.character.position.z);
+
+        GlobalData.Instance.Characters.Add(packet.character.index, NewCharactor);
     }
 }

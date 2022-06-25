@@ -6,15 +6,9 @@ using UnityEngine.AI;
 
 public class MyCharacter : MonoBehaviour
 {
-    NavMeshAgent agent;
-    public Animator Anim;
-    public bool bRun;
     // Start is called before the first frame update
     void Start()
     {
-
-        agent = GetComponent<NavMeshAgent>();
-        Anim = GetComponent<Animator>();
         Observable.Interval(System.TimeSpan.FromSeconds(3))
             .Subscribe(_ => {
                 CS_Game_Position dataform;
@@ -25,23 +19,8 @@ public class MyCharacter : MonoBehaviour
                 WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
             })
             .AddTo(this);
-        this.ObserveEveryValueChanged(x => bRun)
-            .Subscribe(_ => {
-                if (_)
-                {
-                    Anim.SetTrigger("Run");
-                    Debug.Log("Run");
-                }
-                else
-                {
-                    Anim.SetTrigger("Wait");
-                    Debug.Log("Wait");
-                }
-            });
-        //agent.destination = new Vector3(1, 0 ,1);
 
     }
-
 
     void Update()
     {
@@ -61,6 +40,5 @@ public class MyCharacter : MonoBehaviour
                 WS_Client.Instance.Send(JsonUtility.ToJson(dataform));
             }
         }
-        bRun = agent.velocity.magnitude > 0.0001f;
     }
 }

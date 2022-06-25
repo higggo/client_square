@@ -6,39 +6,17 @@ using HybridWebSocket;
 using System.Text;
 
 public enum PacketID
-{ 
+{
     CS_PING = 1001,
     CS_GAME_MOVE,
     CS_GAME_POSITION,
-    CS_LOBBY_SEARCHING_ENEMY,
-    CS_LOBBY_SEARCHING_RESULT,
-    CS_LOBBY_SEARCHING_CANCEL,
-    CS_GAME_ENTRY,
-    CS_GAME_READY,
-    CS_GAME_START,
-    CS_GAME_COMPUTE,
-    CS_GAME_TURN,
-    CS_GAME_SELECT,
-    CS_GAME_RESULT,
-    CS_GAME_NEW_MATCH,
-    CS_GAME_OUT,
     CS_GAME_TIMER,
 
     SC_PING = 3001,
     SC_GAME_SPECTATION,
     SC_GAME_MOVE,
-    SC_LOBBY_SEARCHING_ENEMY,
-    SC_LOBBY_SEARCHING_RESULT,
-    SC_LOBBY_SEARCHING_CANCEL,
-    SC_GAME_ENTRY,
-    SC_GAME_READY,
-    SC_GAME_START,
-    SC_GAME_COMPUTE,
-    SC_GAME_TURN,
-    SC_GAME_SELECT,
-    SC_GAME_RESULT,
-    SC_GAME_NEW_MATCH,
     SC_GAME_OUT,
+    SC_GAME_HELLO_NEWCLIENT,
     SC_GAME_TIMER
 }
 
@@ -158,6 +136,13 @@ public struct SC_Game_Out
     public int index;
 }
 
+[System.Serializable]
+public struct SC_Game_Hello_NewClient
+{
+    public Head ph;
+    public Character character;
+}
+
 
 //
 
@@ -230,6 +215,10 @@ public class WS_Client : MonoBehaviour
                 case PacketID.SC_GAME_OUT:
                     SC_Game_Out sc_game_out = JsonUtility.FromJson<SC_Game_Out>(server_msg);
                     executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_OUT(sc_game_out));
+                    break;
+                case PacketID.SC_GAME_HELLO_NEWCLIENT:
+                    SC_Game_Hello_NewClient sc_game_hello_newclient = JsonUtility.FromJson<SC_Game_Hello_NewClient>(server_msg);
+                    executeOnMainThread.Enqueue(() => GlobalData.Instance.game.SC_GAME_HELLO_NEWCLIENT(sc_game_hello_newclient));
                     break;
             }
         };
