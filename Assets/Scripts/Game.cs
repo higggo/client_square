@@ -42,6 +42,7 @@ public class Game : MonoBehaviour
             if (packet.index == character.index)
             {
                 NewCharactor.AddComponent<MyCharacter>();
+                GlobalData.Instance.Camera.AddComponent<Follow>().player = NewCharactor.transform;
             }
             NewCharactor.GetComponent<CharacterInfo>().index = character.index;
             NewCharactor.transform.localPosition = new Vector3(character.position.x, character.position.y, character.position.z);

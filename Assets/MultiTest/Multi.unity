@@ -215,6 +215,7 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   PopupObject: {fileID: 0}
   UI_Popup: {fileID: 0}
+  Camera: {fileID: 834810290}
 --- !u!1 &834810290
 GameObject:
   m_ObjectHideFlags: 0

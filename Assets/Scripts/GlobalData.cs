@@ -15,6 +15,8 @@ public class GlobalData : MonoBehaviour
     public Transform UI_Popup;
 
     public Dictionary<int, GameObject> Characters = new Dictionary<int, GameObject>();
+
+    public GameObject Camera;
     private void Awake()
     {
         Instance = this;
